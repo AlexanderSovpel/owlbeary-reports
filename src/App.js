@@ -1,81 +1,70 @@
 import React from 'react';
-import Axios from 'axios';
 import styled from 'styled-components';
+import { BrowserRouter, Switch, Route } from 'react-router-dom';
+import { connect } from 'react-redux';
 
-import ReportsListService from './reportsList';
+import ReportCreator from './components/ReportCreator';
+import ReportDetails from './components/ReportDetails';
+import Navigation from './components/Navigation';
+
+import * as reportsActions from './state/actions';
+
+import './App.css';
 
 const Container = styled.main`
   background-color: ivory;
   font-family: 'Consolas', Courier New, monospace;
+  color: #000;
   display: grid;
   grid-template-columns: 300px auto;
   height: 100vh;
 `;
-const Aside = styled.aside`
-  overflow: auto;
-  border-right: 1px solid #ccc;
-`;
 
-const ReportsList = styled.ul`
-  list-style: none;
-  margin: 0;
-  padding: 8px 4px;
-`;
-const ReportListItem = styled.li`
-  padding: 8px 16px;
-`;
+function App(props) {
+  const { authLink, signedIn } = props;
 
-const ReportDetails = styled.section`
-  overflow: auto;
-  padding: 8px 40px;
-  text-align: justify;
-`;
-
-function App() {
-  const [reports, setReports] = React.useState([]);
-  const [current, setCurrent] = React.useState(null);
+  const searchParams = new URLSearchParams(window.location.search);
+  const code = searchParams.get('code');
 
   React.useEffect(() => {
-    const searchParams = new URLSearchParams(window.location.search);
-    const code = searchParams.get('code');
-
     if (code) {
-      Axios.get('http://localhost:8000/auth', { params: { code } })
-        .then(response => {
-          const reportsList = new ReportsListService(response.data);
-          setReports(reportsList);
-        });
-    } else {
-      Axios.get('http://localhost:8000')
-        .then(response => window.location.href = response.data);
+      props.singIn(code);
     }
-  }, []);
 
-  const onSelect = (report) => setCurrent(report);
+    if (!signedIn && !code) {
+      props.getAuthLink();
+
+      if (authLink) {
+        window.location.href = authLink;
+      }
+    } else {
+      props.getReports();
+    }
+  }, [code, signedIn, authLink, props]);
 
   return (
     <Container>
-      <Aside>
-        <ReportsList>
-          { reports.map((report, i) => (
-            <ReportListItem key={i} onClick={onSelect.bind(this, report)}>
-              <a href={'#' + i}>{ report.title }</a>
-            </ReportListItem>
-          )) }
-        </ReportsList>
-      </Aside>
-      <ReportDetails>
-        { current && (
-          <React.Fragment>
-            <h3>{ current.title }</h3>
-            { current.content.map((paragraph, i) => (
-              <p key={i}>{ paragraph }</p>
-            )) }
-          </React.Fragment>
-        ) }
-      </ReportDetails>
+      <BrowserRouter>
+        <Route path="/" component={Navigation} />
+
+        <Switch>
+          <Route path="/:id" component={ReportDetails} />
+
+          <Route path="/new-report" component={ReportCreator} />
+        </Switch>
+      </BrowserRouter>
     </Container>
   );
 }
 
-export default App;
+const mapStateToProps = state => ({
+  signedIn: state.signedIn,
+  authLink: state.authLink,
+});
+const mapDispatchToProps = dispatch => ({
+  getAuthLink: () => dispatch(reportsActions.getAuthLinkRequest()),
+  singIn: (authCode) => dispatch(reportsActions.signInRequest(authCode)),
+  getReports: () => dispatch(reportsActions.getReportsRequest()),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

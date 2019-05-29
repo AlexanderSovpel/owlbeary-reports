@@ -1,11 +1,13 @@
 require('dotenv').config();
 
 const express = require('express');
+const bodyParse = require('body-parser');
 
-const DocsService = require('./docs.service');
-const docsService = new DocsService();
+const docsRouter = require('./docs/router');
 
 const app = express();
+
+app.use(bodyParse.json());
 
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -13,21 +15,6 @@ app.use(function(req, res, next) {
   next();
 });
 
-const router = express.Router();
-router.get('/', (req, res) => {
-  const authUrl = docsService.init();
-  res.send(authUrl);
-});
-router.get('/auth', async (req, res) => {
-  const code = req.query.code;
-  await docsService.auth(code);
-  res.redirect('/document');
-});
-router.get('/document', async (req, res) => {
-  const document = await docsService.getDocument();
-  res.send(document);
-});
-
-app.use(router);
+app.use(docsRouter);
 
 app.listen(8000);

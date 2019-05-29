@@ -21,6 +21,7 @@ class ReportsList {
         reports[i].content.push(paragraph.elements[0].textRun.content);
       } else {
         reports[i] = {
+          id: i,
           title: paragraph.elements[0].textRun.content,
           content: [],
         };
