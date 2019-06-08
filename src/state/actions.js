@@ -14,6 +14,9 @@ export const signInRequest = (authCode) => ({
 export const signInSuccess = () => ({
   type: types.SIGN_IN_SUCCESS,
 });
+export const autoSignInRequest = () => ({
+  type: types.AUTO_SIGN_IN_REQUEST,
+});
 export const getReportsRequest = () => ({
   type: types.GET_REPORTS_REQUEST,
 });

@@ -29,11 +29,11 @@ function Navigation(props) {
       <ReportsList>
         { reports.map((report, i) => (
           <ReportListItem key={i}>
-            <ReportListLink to={`${report.id}`}>{ report.title }</ReportListLink>
+            <ReportListLink to={`/reports/${report.id}`}>{ report.title }</ReportListLink>
           </ReportListItem>
         )) }
         <ReportListItem>
-          <ReportListLink to="/new-report">New Report</ReportListLink>
+          <ReportListLink to="/reports/new-report">New Report</ReportListLink>
         </ReportListItem>
       </ReportsList>
     </Aside>

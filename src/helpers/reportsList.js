@@ -11,12 +11,12 @@ class ReportsList {
     const reports = [];
 
     let i = 0;
-  
+
     for (const paragraph of paragraphs) {
       if (paragraph.paragraphStyle.namedStyleType === 'HEADING_1') {
         i += 1;
       }
-  
+
       if (reports[i]) {
         reports[i].content.push(paragraph.elements[0].textRun.content);
       } else {
@@ -27,7 +27,7 @@ class ReportsList {
         };
       }
     }
-  
+
     return reports;
   }
 }

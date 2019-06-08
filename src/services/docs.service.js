@@ -1,6 +1,5 @@
 import Axios from 'axios';
 
-
 class DocsService {
   constructor() {
     this.axios = Axios.create({

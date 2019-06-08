@@ -4,7 +4,6 @@ const initialState = {
   reports: [],
   current: null,
   signedIn: false,
-  // authCode: '',
   authLink: '',
 };
 
@@ -22,7 +21,6 @@ function reducer(state = initialState, action) {
       return {
         ...state,
         signedIn: true,
-        // authCode: payload,
       };
     }
     case types.GET_REPORTS_SUCCESS: {
